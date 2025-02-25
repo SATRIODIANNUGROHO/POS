@@ -7,10 +7,13 @@ use App\Http\Controllers\FnBController;
 use App\Http\Controllers\BnHController;
 use App\Http\Controllers\HCController;
 use App\Http\Controllers\BKController;
+use App\Http\Controllers\LevelController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/level', [LevelController::class, 'index']);
 
 Route::get('/transaction', [TransactionController::class, 'index']);
 
