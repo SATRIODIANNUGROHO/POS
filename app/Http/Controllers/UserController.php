@@ -13,7 +13,7 @@ class UserController extends Controller
         $data = [
             'nama' => 'Pelanggan Pertama',
         ];
-        UserModel::where('username', 'customer-1')->update($data); // tambahkan data ke tabel m_user
+        UserModel::where('username', 'customer-1')->update($data); // update data user
 
         // coba akses model UserModel
         $user = UserModel::all(); // ambil semua data dari tabel m_user
