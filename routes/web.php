@@ -10,10 +10,13 @@ use App\Http\Controllers\BKController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\POSController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('m_user', POSController::class);
 
 Route::get('/user/tambah', [UserController::class, 'tambah']);
 
