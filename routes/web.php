@@ -11,12 +11,15 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\POSController;
+use App\Http\Controllers\WelcomeController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::resource('m_user', POSController::class);
+
+Route::get('/', [WelcomeController::class, 'index']);
 
 Route::get('/user/tambah', [UserController::class, 'tambah']);
 
