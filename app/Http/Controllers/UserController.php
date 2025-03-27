@@ -8,9 +8,25 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index() {
-        $user = UserModel::with('level') -> get();
-        return view('user', ['data' => $user]);
+    // Menampilkan halaman awal user
+    public function index()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Daftar User',
+            'list'  => ['Home', 'User']
+        ];
+
+        $page = (object) [
+            'title' => 'Daftar user yang terdaftar dalam sistem'
+        ];
+
+        $activeMenu = 'user'; // set menu yang sedang aktif
+
+        return view('user.index', [
+            'breadcrumb' => $breadcrumb,
+            'page'       => $page,
+            'activeMenu' => $activeMenu
+        ]);
     }
 
     public function tambah() {
