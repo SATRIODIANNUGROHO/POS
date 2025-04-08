@@ -12,6 +12,11 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\DataBarangController;
+use App\Http\Controllers\KategoriBarangController;
+use App\Http\Controllers\LevelUserController;
+use App\Http\Controllers\StokBarangController;
+use App\Http\Controllers\TransaksiPenjualanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +33,66 @@ Route::group(['prefix' => 'user'], function () {
     Route::get('/{id}/edit', [UserController::class, 'edit']);    // menampilkan halaman form edit user
     Route::put('/{id}', [UserController::class, 'update']);       // menyimpan perubahan data user
     Route::delete('/{id}', [UserController::class, 'destroy']);   // menghapus data user
+});
+
+// Route untuk Level User
+Route::group(['prefix' => 'level-user'], function () {
+    Route::get('/', [LevelUserController::class, 'index']);
+    Route::post('/list', [LevelUserController::class, 'list']);
+    Route::get('/create', [LevelUserController::class, 'create']);
+    Route::post('/', [LevelUserController::class, 'store']);
+    Route::get('/{id}', [LevelUserController::class, 'show']);
+    Route::get('/{id}/edit', [LevelUserController::class, 'edit']);
+    Route::put('/{id}', [LevelUserController::class, 'update']);
+    Route::delete('/{id}', [LevelUserController::class, 'destroy']);
+});
+
+// Route untuk Kategori Barang
+Route::group(['prefix' => 'kategori-barang'], function () {
+    Route::get('/', [KategoriBarangController::class, 'index']);
+    Route::post('/list', [KategoriBarangController::class, 'list']);
+    Route::get('/create', [KategoriBarangController::class, 'create']);
+    Route::post('/', [KategoriBarangController::class, 'store']);
+    Route::get('/{id}', [KategoriBarangController::class, 'show']);
+    Route::get('/{id}/edit', [KategoriBarangController::class, 'edit']);
+    Route::put('/{id}', [KategoriBarangController::class, 'update']);
+    Route::delete('/{id}', [KategoriBarangController::class, 'destroy']);
+});
+
+// Route untuk Data Barang
+Route::group(['prefix' => 'data-barang'], function () {
+    Route::get('/', [DataBarangController::class, 'index']);
+    Route::post('/list', [DataBarangController::class, 'list']);
+    Route::get('/create', [DataBarangController::class, 'create']);
+    Route::post('/', [DataBarangController::class, 'store']);
+    Route::get('/{id}', [DataBarangController::class, 'show']);
+    Route::get('/{id}/edit', [DataBarangController::class, 'edit']);
+    Route::put('/{id}', [DataBarangController::class, 'update']);
+    Route::delete('/{id}', [DataBarangController::class, 'destroy']);
+});
+
+// Route untuk Stok Barang
+Route::group(['prefix' => 'stok-barang'], function () {
+    Route::get('/', [StokBarangController::class, 'index']);
+    Route::post('/list', [StokBarangController::class, 'list']);
+    Route::get('/create', [StokBarangController::class, 'create']);
+    Route::post('/', [StokBarangController::class, 'store']);
+    Route::get('/{id}', [StokBarangController::class, 'show']);
+    Route::get('/{id}/edit', [StokBarangController::class, 'edit']);
+    Route::put('/{id}', [StokBarangController::class, 'update']);
+    Route::delete('/{id}', [StokBarangController::class, 'destroy']);
+});
+
+// Route untuk Transaksi Penjualan
+Route::group(['prefix' => 'transaksi-penjualan'], function () {
+    Route::get('/', [TransaksiPenjualanController::class, 'index']);
+    Route::post('/list', [TransaksiPenjualanController::class, 'list']);
+    Route::get('/create', [TransaksiPenjualanController::class, 'create']);
+    Route::post('/', [TransaksiPenjualanController::class, 'store']);
+    Route::get('/{id}', [TransaksiPenjualanController::class, 'show']);
+    Route::get('/{id}/edit', [TransaksiPenjualanController::class, 'edit']);
+    Route::put('/{id}', [TransaksiPenjualanController::class, 'update']);
+    Route::delete('/{id}', [TransaksiPenjualanController::class, 'destroy']);
 });
 
 Route::resource('m_user', POSController::class);
