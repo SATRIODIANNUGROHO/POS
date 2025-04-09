@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\KategoriBarang;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 class KategoriBarangController extends Controller
 {
@@ -114,5 +115,125 @@ class KategoriBarangController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/kategori-barang')->with('error', 'Data kategori gagal dihapus karena masih terkait dengan data lain');
         }
+    }
+
+    public function create_ajax()
+    {
+        return view('kategori-barang.create_ajax');
+    }
+
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'kategori_kode' => 'required|string|max:10|unique:m_kategori,kategori_kode',
+                'kategori_nama' => 'required|string|max:100',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            KategoriBarang::create($request->all());
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data kategori barang berhasil disimpan'
+            ]);
+        }
+
+        return redirect('/');
+    }
+
+    public function edit_ajax(string $id)
+    {
+        $kategori = KategoriBarang::find($id);
+
+        return view('kategori-barang.edit_ajax', compact('kategori'));
+    }
+
+    public function update_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'kategori_kode' => 'required|string|max:10|unique:m_kategori,kategori_kode,' . $id . ',kategori_id',
+                'kategori_nama' => 'required|string|max:100',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $kategori = KategoriBarang::find($id);
+
+            if ($kategori) {
+                $kategori->update($request->all());
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diupdate'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function confirm_ajax(string $id)
+    {
+        $kategori = KategoriBarang::find($id);
+
+        return view('kategori-barang.confirm_ajax', compact('kategori'));
+    }
+
+    public function delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $kategori = KategoriBarang::find($id);
+
+            if ($kategori) {
+                $kategori->delete();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function show_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $kategori = KategoriBarang::find($id);
+
+            return view('kategori-barang.show_ajax', compact('kategori'));
+        }
+
+        return redirect('/');
     }
 }
