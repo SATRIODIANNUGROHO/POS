@@ -38,6 +38,7 @@ Route::group(['prefix' => 'user'], function () {
     Route::put('/{id}/update_ajax', [UserController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
     Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
     Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    Route::get('/{id}/show_ajax', [LevelUserController::class, 'show_ajax']); // menampilkan detail user Ajax
     Route::delete('/{id}', [UserController::class, 'destroy']);   // menghapus data user
 });
 
@@ -75,6 +76,7 @@ Route::group(['prefix' => 'kategori-barang'], function () {
     Route::put('/{id}/update_ajax', [KategoriBarangController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
     Route::get('/{id}/delete_ajax', [KategoriBarangController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
     Route::delete('/{id}/delete_ajax', [KategoriBarangController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    Route::get('/{id}/show_ajax', [LevelUserController::class, 'show_ajax']);
     Route::delete('/{id}', [KategoriBarangController::class, 'destroy']);
 });
 
@@ -93,6 +95,7 @@ Route::group(['prefix' => 'data-barang'], function () {
     Route::put('/{id}/update_ajax', [DataBarangController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
     Route::get('/{id}/delete_ajax', [DataBarangController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
     Route::delete('/{id}/delete_ajax', [DataBarangController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    Route::get('/{id}/show_ajax', [LevelUserController::class, 'show_ajax']);
     Route::delete('/{id}', [DataBarangController::class, 'destroy']);
 });
 
@@ -111,6 +114,7 @@ Route::group(['prefix' => 'stok-barang'], function () {
     Route::put('/{id}/update_ajax', [StokBarangController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
     Route::get('/{id}/delete_ajax', [StokBarangController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
     Route::delete('/{id}/delete_ajax', [StokBarangController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    Route::get('/{id}/show_ajax', [LevelUserController::class, 'show_ajax']);
     Route::delete('/{id}', [StokBarangController::class, 'destroy']);
 });
 
@@ -129,6 +133,7 @@ Route::group(['prefix' => 'transaksi-penjualan'], function () {
     Route::put('/{id}/update_ajax', [TransaksiPenjualanController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
     Route::get('/{id}/delete_ajax', [TransaksiPenjualanController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
     Route::delete('/{id}/delete_ajax', [TransaksiPenjualanController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    Route::get('/{id}/show_ajax', [LevelUserController::class, 'show_ajax']);
     Route::delete('/{id}', [TransaksiPenjualanController::class, 'destroy']);
 });
 
