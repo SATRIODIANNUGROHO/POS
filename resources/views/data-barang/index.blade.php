@@ -6,6 +6,8 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('data-barang/create') }}">Tambah</a>
+                <button onclick="modalAction('{{ url('/data-barang/create_ajax') }}')"
+                    class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
             </div>
         </div>
         <div class="card-body">
@@ -41,40 +43,70 @@
             </table>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true">
+    </div>
 @endsection
 
 @push('css')
 @endpush
 
 @push('js')
-<script>
-    $(document).ready(function () {
-        const table = $('#table_barang').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ url('data-barang/list') }}",
-                type: 'POST',
-                data: function(d) {
-                    d._token = "{{ csrf_token() }}";
-                    d.kategori_id = $('#filter_kategori').val();
-                }
-            },
-            columns: [
-                { data: 'DT_RowIndex', name: 'barang_id' },
-                { data: 'barang_kode', name: 'barang_kode' },
-                { data: 'barang_nama', name: 'barang_nama' },
-                { data: 'kategori.kategori_nama', name: 'kategori.kategori_nama' },
-                { data: 'harga_jual', name: 'harga_jual' },
-                { data: 'harga_beli', name: 'harga_beli' },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
-            ]
-        });
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        $(document).ready(function() {
+            const table = $('#table_barang').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('data-barang/list') }}",
+                    type: 'POST',
+                    data: function(d) {
+                        d._token = "{{ csrf_token() }}";
+                        d.kategori_id = $('#filter_kategori').val();
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'barang_id'
+                    },
+                    {
+                        data: 'barang_kode',
+                        name: 'barang_kode'
+                    },
+                    {
+                        data: 'barang_nama',
+                        name: 'barang_nama'
+                    },
+                    {
+                        data: 'kategori.kategori_nama',
+                        name: 'kategori.kategori_nama'
+                    },
+                    {
+                        data: 'harga_jual',
+                        name: 'harga_jual'
+                    },
+                    {
+                        data: 'harga_beli',
+                        name: 'harga_beli'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
 
-        // Filter kategori
-        $('#filter_kategori').on('change', function () {
-            table.ajax.reload();
+            // Filter kategori
+            $('#filter_kategori').on('change', function() {
+                table.ajax.reload();
+            });
         });
-    });
-</script>
+    </script>
 @endpush
