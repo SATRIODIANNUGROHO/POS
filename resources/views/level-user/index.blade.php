@@ -44,7 +44,7 @@
                 data: {_token: "{{ csrf_token() }}"} // penting untuk request POST
             },
             columns: [
-                { data: "level_id", name: "level_id" },
+                { data: "DT_RowIndex", name: "level_id" },
                 { data: "level_kode", name: "level_kode" },
                 { data: "level_nama", name: "level_nama" },
                 { data: "aksi", name: "aksi", orderable: false, searchable: false }

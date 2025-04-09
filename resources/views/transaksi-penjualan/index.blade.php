@@ -50,7 +50,7 @@
                 }
             },
             columns: [
-                { data: 'detail_id', name: 'detail_id' },
+                { data: 'DT_RowIndex', name: 'detail_id' },
                 { data: 'penjualan_id', name: 'penjualan_id' },
                 { data: 'barang.barang_nama', name: 'barang.barang_nama' },
                 { data: 'harga', name: 'harga' },

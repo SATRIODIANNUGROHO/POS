@@ -44,7 +44,7 @@
                 data: {_token: "{{ csrf_token() }}"}
             },
             columns: [
-                { data: "kategori_id", name: "kategori_id" },
+                { data: "DT_RowIndex", name: "kategori_id" },
                 { data: "kategori_kode", name: "kategori_kode" },
                 { data: "kategori_nama", name: "kategori_nama" },
                 { data: "aksi", name: "aksi", orderable: false, searchable: false }

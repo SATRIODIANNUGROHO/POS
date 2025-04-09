@@ -61,7 +61,7 @@
                 }
             },
             columns: [
-                { data: 'barang_id', name: 'barang_id' },
+                { data: 'DT_RowIndex', name: 'barang_id' },
                 { data: 'barang_kode', name: 'barang_kode' },
                 { data: 'barang_nama', name: 'barang_nama' },
                 { data: 'kategori.kategori_nama', name: 'kategori.kategori_nama' },
