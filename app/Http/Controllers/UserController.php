@@ -311,6 +311,13 @@ class UserController extends Controller
         return redirect('/');
     }
 
+    public function show_ajax(string $id)
+    {
+        $user = UserModel::with('level')->find($id); // Pastikan relasi 'level' ada di model
+    
+        return view('user.show_ajax', ['user' => $user]);
+    }    
+
     public function tambah()
     {
         return view('user_tambah');
