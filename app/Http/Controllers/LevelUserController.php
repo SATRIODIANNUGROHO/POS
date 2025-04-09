@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LevelUser;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 class LevelUserController extends Controller
 {
@@ -19,20 +20,24 @@ class LevelUserController extends Controller
 
     public function list(Request $request)
     {
-        $data = LevelUser::select('level_id', 'level_kode', 'level_nama');
-        return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($level) {
-                $btn = '<a href="' . url('/level-user/' . $level->level_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<a href="' . url('/level-user/' . $level->level_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/level-user/' . $level->level_id) . '">'
-                    . csrf_field() . method_field('DELETE') .
-                    '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
+        $level = LevelUser::select('level_id', 'level_kode', 'level_nama');
+    
+        // Jika ingin menambahkan filter (optional)
+        if ($request->level_kode) {
+            $level->where('level_kode', 'like', '%' . $request->level_kode . '%');
+        }
+    
+        return DataTables::of($level)
+            ->addIndexColumn() // tambahkan kolom index
+            ->addColumn('aksi', function ($lvl) {
+                $btn  = '<button onclick="modalAction(\'' . url('/level-user/' . $lvl->level_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/level-user/' . $lvl->level_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/level-user/' . $lvl->level_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
                 return $btn;
             })
-            ->rawColumns(['aksi']) // beri tahu DataTables kalau kolom ini HTML
+            ->rawColumns(['aksi']) // beritahu DataTables bahwa kolom aksi berupa HTML
             ->make(true);
-    }
+    }    
 
     public function create()
     {
@@ -137,5 +142,112 @@ class LevelUserController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/level-user')->with('error', 'Data level user gagal dihapus karena masih terkait dengan data lain');
         }
-    }    
+    }
+
+    public function create_ajax()
+    {
+        return view('level-user.create_ajax');
+    }
+
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'level_kode' => 'required|string|max:10|unique:m_level,level_kode',
+                'level_nama' => 'required|string|max:100',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            LevelUser::create($request->all());
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data level user berhasil disimpan'
+            ]);
+        }
+
+        return redirect('/');
+    }
+
+    public function edit_ajax(string $id)
+    {
+        $level = LevelUser::find($id);
+
+        return view('level-user.edit_ajax', compact('level'));
+    }
+
+    public function update_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'level_kode' => 'required|string|max:10|unique:m_level,level_kode,' . $id . ',level_id',
+                'level_nama' => 'required|string|max:100',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $level = LevelUser::find($id);
+
+            if ($level) {
+                $level->update($request->all());
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diupdate'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function confirm_ajax(string $id)
+    {
+        $level = LevelUser::find($id);
+
+        return view('level-user.confirm_ajax', compact('level'));
+    }
+
+    public function delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $level = LevelUser::find($id);
+
+            if ($level) {
+                $level->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
 }
