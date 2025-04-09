@@ -21,12 +21,12 @@ class LevelUserController extends Controller
     public function list(Request $request)
     {
         $level = LevelUser::select('level_id', 'level_kode', 'level_nama');
-    
+
         // Jika ingin menambahkan filter (optional)
         if ($request->level_kode) {
             $level->where('level_kode', 'like', '%' . $request->level_kode . '%');
         }
-    
+
         return DataTables::of($level)
             ->addIndexColumn() // tambahkan kolom index
             ->addColumn('aksi', function ($lvl) {
@@ -37,105 +37,105 @@ class LevelUserController extends Controller
             })
             ->rawColumns(['aksi']) // beritahu DataTables bahwa kolom aksi berupa HTML
             ->make(true);
-    }    
+    }
 
     public function create()
     {
         $breadcrumb = (object) ['title' => 'Tambah Level User', 'list' => ['Home', 'Level User', 'Tambah']];
         $page = (object) ['title' => 'Form Tambah Level User'];
         $activeMenu = 'level-user';
-    
+
         return view('level-user.create', compact('breadcrumb', 'page', 'activeMenu'));
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
             'level_kode' => 'required|string|max:10|unique:m_level,level_kode',
             'level_nama' => 'required|string|max:100',
         ]);
-    
+
         LevelUser::create([
             'level_kode' => $request->level_kode,
             'level_nama' => $request->level_nama,
         ]);
-    
+
         return redirect('/level-user')->with('success', 'Data berhasil disimpan');
     }
-    
+
     public function show(string $id)
     {
         $level = LevelUser::find($id); // ambil data level berdasarkan ID
-    
+
         $breadcrumb = (object) [
             'title' => 'Detail Level User',
             'list'  => ['Home', 'Level User', 'Detail']
         ];
-    
+
         $page = (object) [
             'title' => 'Detail Level User'
         ];
-    
+
         $activeMenu = 'level-user'; // set menu aktif
-    
+
         return view('level-user.show', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
             'level' => $level,
             'activeMenu' => $activeMenu
         ]);
-    }    
-    
+    }
+
     public function edit(string $id)
     {
         $level = LevelUser::find($id); // ambil data level berdasarkan ID
-    
+
         $breadcrumb = (object) [
             'title' => 'Edit Level User',
             'list'  => ['Home', 'Level User', 'Edit']
         ];
-    
+
         $page = (object) [
             'title' => 'Edit Level User'
         ];
-    
+
         $activeMenu = 'level-user'; // set menu yang sedang aktif
-    
+
         return view('level-user.edit', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
             'level' => $level,
             'activeMenu' => $activeMenu
         ]);
-    }    
-    
+    }
+
     public function update(Request $request, string $id)
     {
         $request->validate([
             'level_kode' => 'required|string|max:10|unique:m_level,level_kode,' . $id . ',level_id',
             'level_nama' => 'required|string|max:100',
         ]);
-    
+
         $level = LevelUser::find($id);
         if (!$level) {
             return redirect('/level-user')->with('error', 'Data level user tidak ditemukan');
         }
-    
+
         $level->update([
             'level_kode' => $request->level_kode,
             'level_nama' => $request->level_nama,
         ]);
-    
+
         return redirect('/level-user')->with('success', 'Data level user berhasil diubah');
-    }    
-    
+    }
+
     public function destroy(string $id)
     {
         $check = LevelUser::find($id);
         if (!$check) {
             return redirect('/level-user')->with('error', 'Data level user tidak ditemukan');
         }
-    
+
         try {
             LevelUser::destroy($id);
             return redirect('/level-user')->with('success', 'Data level user berhasil dihapus');
@@ -246,6 +246,17 @@ class LevelUserController extends Controller
                     'message' => 'Data tidak ditemukan'
                 ]);
             }
+        }
+
+        return redirect('/');
+    }
+
+    public function show_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $level = LevelUser::find($id);
+
+            return view('level-user.show_ajax', compact('level'));
         }
 
         return redirect('/');

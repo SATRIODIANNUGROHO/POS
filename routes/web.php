@@ -56,6 +56,7 @@ Route::group(['prefix' => 'level-user'], function () {
     Route::put('/{id}/update_ajax', [LevelUserController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
     Route::get('/{id}/delete_ajax', [LevelUserController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
     Route::delete('/{id}/delete_ajax', [LevelUserController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    Route::get('/{id}/show_ajax', [LevelUserController::class, 'show_ajax']);
     Route::delete('/{id}', [LevelUserController::class, 'destroy']);
 });
 
