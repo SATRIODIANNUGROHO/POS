@@ -13,7 +13,7 @@ class StokBarang extends Model
 
     protected $primaryKey = 'stok_id'; // Primary key tabel
 
-    protected $table = 't_stok'; 
+    protected $table = 't_stok';
 
     protected $fillable = [
         'barang_id', // Foreign key ke data barang
@@ -25,5 +25,10 @@ class StokBarang extends Model
     public function barang()
     {
         return $this->belongsTo(DataBarang::class, 'barang_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(UserModel::class, 'user_id', 'user_id');
     }
 }
