@@ -174,11 +174,13 @@ class DataBarangController extends Controller
         return redirect('/');
     }
     
-    public function edit_ajax(string $id)
+    public function edit_ajax($id)
     {
         $barang = DataBarang::find($id);
-        return view('data-barang.edit_ajax', compact('barang'));
-    }
+        $kategoriList = KategoriBarang::all();
+    
+        return view('data-barang.edit_ajax', compact('barang', 'kategoriList'));
+    }    
     
     public function update_ajax(Request $request, string $id)
     {
