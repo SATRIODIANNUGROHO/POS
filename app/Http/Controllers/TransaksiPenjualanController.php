@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TransaksiPenjualan;
 use App\Models\TransaksiPenjualanDetail;
 use App\Models\DataBarang;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 class TransaksiPenjualanController extends Controller
 {
@@ -20,25 +22,28 @@ class TransaksiPenjualanController extends Controller
 
     public function list(Request $request)
     {
-        $data = TransaksiPenjualanDetail::with('barang')->select('detail_id', 'penjualan_id', 'barang_id', 'harga', 'jumlah');
-
+        $data = TransaksiPenjualanDetail::with('barang')
+            ->select('detail_id', 'penjualan_id', 'barang_id', 'harga', 'jumlah');
+    
+        // Filter berdasarkan barang_id jika dikirim dari frontend (opsional)
         if ($request->barang_id) {
             $data->where('barang_id', $request->barang_id);
         }
-
+    
         return DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('barang_nama', function ($row) {
+                return $row->barang->barang_nama ?? '-';
+            })
             ->addColumn('aksi', function ($transaksi) {
-                $btn = '<a href="' . url('/transaksi-penjualan/' . $transaksi->detail_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<a href="' . url('/transaksi-penjualan/' . $transaksi->detail_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/transaksi-penjualan/' . $transaksi->detail_id) . '">'
-                    . csrf_field() . method_field('DELETE') .
-                    '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin ingin menghapus transaksi ini?\');">Hapus</button></form>';
+                $btn  = '<button onclick="modalAction(\'' . url('/transaksi-penjualan/' . $transaksi->detail_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/transaksi-penjualan/' . $transaksi->detail_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/transaksi-penjualan/' . $transaksi->detail_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
-    }
+    }    
 
     public function create()
     {
@@ -130,4 +135,131 @@ class TransaksiPenjualanController extends Controller
             return redirect('/transaksi-penjualan')->with('error', 'Transaksi gagal dihapus');
         }
     }
+
+    public function create_ajax()
+    {
+        $barangList = DataBarang::select('barang_id', 'barang_nama')->get();
+        $penjualanList = TransaksiPenjualan::select('penjualan_id')->get();
+    
+        return view('transaksi-penjualan.create_ajax', compact('barangList', 'penjualanList'));
+    }
+    
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'penjualan_id' => 'required|integer',
+                'barang_id'    => 'required|integer',
+                'harga'        => 'required|numeric',
+                'jumlah'       => 'required|integer|min:1'
+            ];
+    
+            $validator = Validator::make($request->all(), $rules);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+    
+            TransaksiPenjualanDetail::create($request->all());
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Data transaksi penjualan berhasil disimpan'
+            ]);
+        }
+    
+        return redirect('/');
+    }
+    
+    public function edit_ajax(string $id)
+    {
+        $data = TransaksiPenjualanDetail::find($id);
+        $barangList = DataBarang::select('barang_id', 'barang_nama')->get();
+        $penjualanList = TransaksiPenjualan::select('penjualan_id')->get();
+    
+        return view('transaksi-penjualan.edit_ajax', compact('data', 'barangList', 'penjualanList'));
+    }
+    
+    public function update_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'penjualan_id' => 'required|integer',
+                'barang_id'    => 'required|integer',
+                'harga'        => 'required|numeric',
+                'jumlah'       => 'required|integer|min:1'
+            ];
+    
+            $validator = Validator::make($request->all(), $rules);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+    
+            $data = TransaksiPenjualanDetail::find($id);
+    
+            if ($data) {
+                $data->update($request->all());
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diupdate'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+    
+        return redirect('/');
+    }
+    
+    public function confirm_ajax(string $id)
+    {
+        $data = TransaksiPenjualanDetail::with('barang')->find($id);
+    
+        return view('transaksi-penjualan.confirm_ajax', compact('data'));
+    }
+    
+    public function delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $data = TransaksiPenjualanDetail::find($id);
+    
+            if ($data) {
+                $data->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+    
+        return redirect('/');
+    }
+    
+    public function show_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $data = TransaksiPenjualanDetail::with('barang')->find($id);
+    
+            return view('transaksi-penjualan.show_ajax', compact('data'));
+        }
+    
+        return redirect('/');
+    }    
 }

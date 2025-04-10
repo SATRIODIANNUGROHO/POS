@@ -6,6 +6,8 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('transaksi-penjualan/create') }}">Tambah</a>
+                <button onclick="modalAction('{{ url('/transaksi-penjualan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
+                    Ajax</button>
             </div>
         </div>
         <div class="card-body">
@@ -30,34 +32,61 @@
             </table>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true">
+    </div>
 @endsection
 
 @push('css')
 @endpush
 
 @push('js')
-<script>
-    $(document).ready(function () {
-        $('#table_transaksi').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ url('transaksi-penjualan/list') }}",
-                type: 'POST',
-                data: function(d) {
-                    d._token = "{{ csrf_token() }}";
-                    // Tambah filter tambahan di sini jika dibutuhkan
-                }
-            },
-            columns: [
-                { data: 'DT_RowIndex', name: 'detail_id' },
-                { data: 'penjualan_id', name: 'penjualan_id' },
-                { data: 'barang.barang_nama', name: 'barang.barang_nama' },
-                { data: 'harga', name: 'harga' },
-                { data: 'jumlah', name: 'jumlah' },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
-            ]
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        $(document).ready(function() {
+            $('#table_transaksi').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('transaksi-penjualan/list') }}",
+                    type: 'POST',
+                    data: function(d) {
+                        d._token = "{{ csrf_token() }}";
+                        // Tambah filter tambahan di sini jika dibutuhkan
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'detail_id'
+                    },
+                    {
+                        data: 'penjualan_id',
+                        name: 'penjualan_id'
+                    },
+                    {
+                        data: 'barang.barang_nama',
+                        name: 'barang.barang_nama'
+                    },
+                    {
+                        data: 'harga',
+                        name: 'harga'
+                    },
+                    {
+                        data: 'jumlah',
+                        name: 'jumlah'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
         });
-    });
-</script>
+    </script>
 @endpush
