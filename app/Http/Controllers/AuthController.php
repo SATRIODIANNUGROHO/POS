@@ -82,9 +82,4 @@ class AuthController extends Controller
 
         return redirect()->route('home')->with('success', 'Registration successful!');
     }
-
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
 }
