@@ -10,7 +10,18 @@ class LevelModel extends Model
     use HasFactory;
 
     protected $table = 'm_level';
-    protected $primaryKey = 'level_id';
+    
+    protected $primaryKey = 'level_id'; // Primary key tabel
+    
+    public $timestamps = true; // Aktifkan timestamps (created_at & updated_at)
+    
+    protected $fillable = [
+        'level_kode',
+        'level_nama',
+    ];
 
-    protected $fillable = ['level_kode', 'level_nama'];
+    public function users()
+    {
+        return $this->hasMany(UserModel::class, 'level_id', 'level_id');
+    }
 }

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use App\Models\LevelUser;
+use App\Models\LevelModel;
 use App\Models\UserModel;
 
 class AuthController extends Controller
@@ -52,7 +52,7 @@ class AuthController extends Controller
     }
     public function showRegistrationForm()
     {
-        $levels = LevelUser::all();
+        $levels = LevelModel::all();
         return view('auth.register', compact('levels'));
     }
 
@@ -66,6 +66,14 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -75,11 +83,19 @@ class AuthController extends Controller
             'username' => $request->username,
             'nama' => $request->nama,
             'level_id' => $request->level_id,
-            'password' => Hash::make($request->password),
+            'password' => $request->password, // sudah di-cast otomatis ke hashed oleh model
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Registration successful!');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Pendaftaran berhasil!',
+                'redirect' => route('login'),
+            ]);
+        }
+
+        return redirect()->route('login');
     }
 }
