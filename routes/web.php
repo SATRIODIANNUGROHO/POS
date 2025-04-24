@@ -106,6 +106,8 @@ Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam g
         Route::post('/', [DataBarangController::class, 'store']);
         Route::get('/create_ajax', [DataBarangController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
         Route::post('/ajax', [DataBarangController::class, 'store_ajax']);        // Menyimpan data user baru Ajax
+        Route::get('/import', [DataBarangController::class, 'import']); // Ajax form upload excel
+        Route::post('/import_ajax', [DataBarangController::class, 'import_ajax']); // Ajax import excel
         Route::get('/{id}', [DataBarangController::class, 'show']);
         Route::get('/{id}/edit', [DataBarangController::class, 'edit']);
         Route::put('/{id}', [DataBarangController::class, 'update']);
