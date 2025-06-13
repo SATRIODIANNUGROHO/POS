@@ -19,25 +19,25 @@ use App\Http\Controllers\StokBarangController;
 use App\Http\Controllers\TransaksiPenjualanController;
 use App\Http\Controllers\AuthController;
 
-Route::pattern('id','[0-9]+'); // artinya ketika ada parameter {id}, maka harus berupa angka
+Route::pattern('id', '[0-9]+'); // artinya ketika ada parameter {id}, maka harus berupa angka
 
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::get('login', [AuthController::class,'login'])->name('login');
-Route::post('login', [AuthController::class,'postlogin']);
-Route::post('logout', [AuthController::class,'logout'])->name('logout')->middleware('auth');
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'postlogin']);
+Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam group ini harus login dulu
+Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
 
     // masukkan semua route yang perlu autentikasi di sini
     Route::get('/', function () {
         return view('welcome');
     });
-    
+
     Route::get('/', [WelcomeController::class, 'index']);
-    
+
     // Route untuk Administrator (ADM)
-    Route::middleware(['authorize:ADM'])->group(function() {
+    Route::middleware(['authorize:ADM'])->group(function () {
         // Route untuk Level User
         Route::group(['prefix' => 'level-user'], function () {
             Route::get('/', [LevelUserController::class, 'index']);
@@ -75,9 +75,9 @@ Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam g
         Route::get('/{id}/show_ajax', [UserController::class, 'show_ajax']); // menampilkan detail user Ajax
         Route::delete('/{id}', [UserController::class, 'destroy']);   // menghapus data user
     });
-    
+
     // Semua route di dalam group ini harus punya role ADM (Administrator) dan MNG (Manager)
-    Route::middleware(['authorize:ADM,MNG'])->group(function() {
+    Route::middleware(['authorize:ADM,MNG'])->group(function () {
         // Route untuk Kategori Barang
         Route::group(['prefix' => 'kategori-barang'], function () {
             Route::get('/', [KategoriBarangController::class, 'index']);
@@ -97,7 +97,7 @@ Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam g
             Route::delete('/{id}', [KategoriBarangController::class, 'destroy']);
         });
     });
-    
+
     // Route untuk Data Barang
     Route::group(['prefix' => 'data-barang'], function () {
         Route::get('/', [DataBarangController::class, 'index']);
@@ -117,8 +117,12 @@ Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam g
         Route::delete('/{id}/delete_ajax', [DataBarangController::class, 'delete_ajax']); // Untuk hapus data user Ajax
         Route::get('/{id}/show_ajax', [DataBarangController::class, 'show_ajax']);
         Route::delete('/{id}', [DataBarangController::class, 'destroy']);
+        Route::get('/import', [DataBarangController::class, 'import']); // ajax form upload excel
+        Route::post('/import_ajax', [DataBarangController::class, 'import_ajax']); // ajax import excel
+        Route::get('/export_excel', [DataBarangController::class, 'export_excel']); // export excel
+        Route::get('/export_pdf', [DataBarangController::class, 'export_pdf']); // export pdf
     });
-    
+
     // Route untuk Stok Barang
     Route::group(['prefix' => 'stok-barang'], function () {
         Route::get('/', [StokBarangController::class, 'index']);
@@ -137,7 +141,7 @@ Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam g
         Route::get('/{id}/show_ajax', [StokBarangController::class, 'show_ajax']);
         Route::delete('/{id}', [StokBarangController::class, 'destroy']);
     });
-    
+
     // Route untuk Transaksi Penjualan
     Route::group(['prefix' => 'transaksi-penjualan'], function () {
         Route::get('/', [TransaksiPenjualanController::class, 'index']);
@@ -156,47 +160,46 @@ Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam g
         Route::get('/{id}/show_ajax', [TransaksiPenjualanController::class, 'show_ajax']);
         Route::delete('/{id}', [TransaksiPenjualanController::class, 'destroy']);
     });
-    
-    Route::resource('m_user', POSController::class);
-    
-    Route::get('/', [WelcomeController::class, 'index']);
-    
-    Route::get('/user/tambah', [UserController::class, 'tambah']);
-    
-    Route::post('/user/tambah_simpan', [UserController::class, 'tambah_simpan']);
-    
-    Route::get('/user/ubah/{id}', [UserController::class, 'ubah']);
-    
-    Route::put('/user/ubah_simpan/{id}', [UserController::class, 'ubah_simpan']);
-    
-    Route::get('/user/hapus/{id}', [UserController:: class, 'hapus']);
-    
-    Route::get('/level', [LevelController::class, 'index']);
-    
-    Route::get('/kategori', [KategoriController::class, 'index']);
-    
-    Route::get('/kategori/create', [KategoriController::class, 'create']);
-    
-    Route::post('/kategori', [KategoriController::class, 'store']);
-    
-    Route::get('/user', [UserController::class, 'index']);
-    
-    Route::get('/transaction', [TransactionController::class, 'index']);
-    
-    Route::get('/profile', [ProfileController::class, 'index']);
-    
-    Route::get('/foodAndBeverage', [FnBController::class, 'index']);
-    
-    Route::get('/beautyHealth', [BnHController::class, 'index']);
-    
-    Route::get('/homeCare', [HCController::class, 'index']);
-    
-    Route::get('/babyKid', [BKController::class, 'index']);
-    
-    Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit']);
-    
-    Route::put('/kategori/{id}', [KategoriController::class, 'update']);
-    
-    Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']);
 
+    Route::resource('m_user', POSController::class);
+
+    Route::get('/', [WelcomeController::class, 'index']);
+
+    Route::get('/user/tambah', [UserController::class, 'tambah']);
+
+    Route::post('/user/tambah_simpan', [UserController::class, 'tambah_simpan']);
+
+    Route::get('/user/ubah/{id}', [UserController::class, 'ubah']);
+
+    Route::put('/user/ubah_simpan/{id}', [UserController::class, 'ubah_simpan']);
+
+    Route::get('/user/hapus/{id}', [UserController::class, 'hapus']);
+
+    Route::get('/level', [LevelController::class, 'index']);
+
+    Route::get('/kategori', [KategoriController::class, 'index']);
+
+    Route::get('/kategori/create', [KategoriController::class, 'create']);
+
+    Route::post('/kategori', [KategoriController::class, 'store']);
+
+    Route::get('/user', [UserController::class, 'index']);
+
+    Route::get('/transaction', [TransactionController::class, 'index']);
+
+    Route::get('/profile', [ProfileController::class, 'index']);
+
+    Route::get('/foodAndBeverage', [FnBController::class, 'index']);
+
+    Route::get('/beautyHealth', [BnHController::class, 'index']);
+
+    Route::get('/homeCare', [HCController::class, 'index']);
+
+    Route::get('/babyKid', [BKController::class, 'index']);
+
+    Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit']);
+
+    Route::put('/kategori/{id}', [KategoriController::class, 'update']);
+
+    Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']);
 });
